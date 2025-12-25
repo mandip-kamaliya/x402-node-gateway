@@ -26,4 +26,23 @@ const checkPayment = async (req, res, next) => {
             currency: "TCRO"
         });
     }
-}
+
+    // 2. Verify the receipt on blockchain
+    try {
+        const tx = await provider.getTransaction(txHash);
+        
+        // Validation: Did they pay ME? Did they pay ENOUGH?
+        if (tx && tx.to.toLowerCase() === MERCHANT_WALLET.toLowerCase()) {
+            const paidAmount = ethers.formatEther(tx.value);
+            if (parseFloat(paidAmount) >= parseFloat(PRICE)) {
+                console.log(`[Server] ✅ Payment Verified: ${txHash}`);
+                return next(); // SUCCESS! Let them proceed.
+            }
+        }
+        res.status(403).json({ error: "Payment invalid or insufficient" });
+    } catch (e) {
+        console.error(e);
+        res.status(500).json({ error: "Blockchain verification failed" });
+    }
+};
+
