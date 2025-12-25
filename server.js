@@ -17,7 +17,7 @@ const checkPayment = async (req, res, next) => {
     const txHash = req.headers['x-payment-hash'];
 
     if (!txHash) {
-        console.log(`[Server] ⛔ Blocking user. Demanding ${PRICE} TCRO.`);
+        console.log(`[Server]  Blocking user. Demanding ${PRICE} TCRO.`);
         // Return 402 Error with payment instructions
         return res.status(402).json({
             error: "Payment Required",
@@ -45,4 +45,14 @@ const checkPayment = async (req, res, next) => {
         res.status(500).json({ error: "Blockchain verification failed" });
     }
 };
+
+// THE SECRET ROUTE
+app.get('/secret', checkPayment, (req, res) => {
+    res.json({
+        status: "Unlocked",
+        message: " Congratulations! You just built an x402 Agentic Flow."
+    });
+});
+
+app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
 
