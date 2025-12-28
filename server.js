@@ -44,7 +44,6 @@ const checkPayment = async (req, res, next) => {
     }
 };
 
-// THE SECRET ROUTE
 app.get('/secret', checkPayment, (req, res) => {
     res.json({
         status: "Unlocked",
